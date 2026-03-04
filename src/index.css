@@ -1,0 +1,76 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+@layer base {
+  :root {
+    /* Light Mode — warm, airy, professional */
+    --color-bg-primary: #F4F7F4;
+    --color-bg-card: #FFFFFF;
+    --color-bg-surface: #4B6D53;
+    --color-bg-surface-alt: #3B5A42;
+    --color-bg-elevated: #E8F0E9;
+    --color-text-primary: #1C2826;
+    --color-text-secondary: #4B6D53;
+    --color-text-muted: #8BA08F;
+    --color-accent: #2F6B3A;
+    --color-accent-hover: #1A4D24;
+    --color-border: #D6E3D9;
+    --color-border-subtle: rgba(47, 107, 58, 0.12);
+    --color-sidebar-bg: #2F4A35;
+    --color-sidebar-active: #4B6D53;
+    --color-sidebar-text: #A2BFA6;
+    --color-sidebar-text-active: #FFFFFF;
+    --color-header-bg: rgba(244, 247, 244, 0.88);
+    --color-input-bg: #FFFFFF;
+    --color-badge-bg: rgba(47, 107, 58, 0.08);
+    --color-hero-gradient: linear-gradient(135deg, #2F6B3A 0%, #4B8B55 50%, #5FA268 100%);
+    --shadow-card: 0 1px 4px rgba(28, 40, 38, 0.06), 0 4px 12px rgba(28, 40, 38, 0.03);
+    --shadow-elevated: 0 8px 24px rgba(28, 40, 38, 0.1);
+  }
+
+  .dark {
+    /* Dark Mode — deep, immersive */
+    --color-bg-primary: #0F1A13;
+    --color-bg-card: #1A2E20;
+    --color-bg-surface: #2F4A35;
+    --color-bg-surface-alt: #1A2E20;
+    --color-bg-elevated: #253D2B;
+    --color-text-primary: #E8F5E9;
+    --color-text-secondary: #A2BFA6;
+    --color-text-muted: #5B6B65;
+    --color-accent: #8BC48F;
+    --color-accent-hover: #A8D9AB;
+    --color-border: #2F4A35;
+    --color-border-subtle: rgba(75, 109, 83, 0.35);
+    --color-sidebar-bg: #0F1A13;
+    --color-sidebar-active: #2F4A35;
+    --color-sidebar-text: #5B6B65;
+    --color-sidebar-text-active: #E8F5E9;
+    --color-header-bg: rgba(15, 26, 19, 0.85);
+    --color-input-bg: #1A2E20;
+    --color-badge-bg: rgba(75, 109, 83, 0.25);
+    --color-hero-gradient: linear-gradient(135deg, #1A2E20 0%, #2F4A35 50%, #3B5A42 100%);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.25);
+    --shadow-elevated: 0 16px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  html {
+    font-family: 'Outfit', system-ui, sans-serif;
+  }
+
+  body {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Global scrollbar styling */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
