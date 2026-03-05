@@ -5,7 +5,7 @@ import { EarningsChart } from '../components/EarningsChart';
 import { AlertsPanel } from '../components/AlertsPanel';
 import { TransactionTable } from '../components/TransactionTable';
 import { AddProductModal } from '../components/AddProductModal';
-import { Sprout, TrendingUp, Package, IndianRupee, ArrowUpRight, Cloud, Sun, Droplets, Wind, Eye, ShoppingCart, FileText, Star } from 'lucide-react';
+import { Sprout, TrendingUp, Package, IndianRupee, ArrowUpRight, Cloud, Sun, Droplets, Wind, Star } from 'lucide-react';
 import { useProductStore } from '../../../store/productStore';
 import { useAuthStore } from '../../../store/authStore';
 
