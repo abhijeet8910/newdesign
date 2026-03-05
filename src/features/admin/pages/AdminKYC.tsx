@@ -3,7 +3,7 @@ import { Shield, CheckCircle, XCircle, Clock, Search, Filter, MapPin, FileText, 
 import { motion } from 'framer-motion';
 import { DetailModal, DetailRow } from '../../../components/ui/DetailModal';
 
-const KYC_QUEUE = [
+const INITIAL_KYC = [
     { id: 1, name: 'Rajesh Kumar', role: 'Farmer', submitted: '2 hours ago', status: 'pending', docs: 3, location: 'Andhra Pradesh', email: 'rajesh@email.com', phone: '+91 98765 43210', docList: ['Aadhaar Card', 'Land Document', 'Bank Passbook'], farmSize: '5 acres', crops: 'Rice, Wheat' },
     { id: 2, name: 'Priya Foods Pvt Ltd', role: 'Business', submitted: '5 hours ago', status: 'pending', docs: 5, location: 'Maharashtra', email: 'priya@foods.com', phone: '+91 87654 32109', docList: ['GST Certificate', 'PAN Card', 'Company Registration', 'Address Proof', 'Bank Statement'], farmSize: 'N/A', crops: 'N/A' },
     { id: 3, name: 'Suresh Reddy', role: 'Bulk_Farmer', submitted: '1 day ago', status: 'review', docs: 4, location: 'Telangana', email: 'suresh@email.com', phone: '+91 76543 21098', docList: ['Aadhaar Card', 'Land Document', 'FPO Certificate', 'Bank Passbook'], farmSize: '25 acres', crops: 'Cotton, Turmeric' },
@@ -24,9 +24,20 @@ const statusConfig: Record<string, { label: string; icon: any; color: string; bg
 
 export const AdminKYC = () => {
     const [activeTab, setActiveTab] = useState('All');
-    const [selectedKYC, setSelectedKYC] = useState<typeof KYC_QUEUE[0] | null>(null);
+    const [kycQueue, setKycQueue] = useState(INITIAL_KYC);
+    const [selectedKYC, setSelectedKYC] = useState<typeof INITIAL_KYC[0] | null>(null);
+    const [actionFeedback, setActionFeedback] = useState<{ id: number; action: string } | null>(null);
 
-    const filtered = activeTab === 'All' ? KYC_QUEUE : KYC_QUEUE.filter((k) => k.status === activeTab);
+    const handleAction = (id: number, action: string) => {
+        setActionFeedback({ id, action });
+        setTimeout(() => {
+            setKycQueue((prev) => prev.filter((k) => k.id !== id));
+            if (selectedKYC?.id === id) setSelectedKYC(null);
+            setActionFeedback(null);
+        }, 800);
+    };
+
+    const filtered = activeTab === 'All' ? kycQueue : kycQueue.filter((k) => k.status === activeTab);
 
     return (
         <div className="max-w-7xl mx-auto pb-8 min-h-screen">
@@ -42,7 +53,7 @@ export const AdminKYC = () => {
                         <p className="text-white/60 mt-1 text-sm">Review and process pending identity verifications.</p>
                     </div>
                     <div className="px-4 py-2 rounded-2xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center gap-2">
-                        <Clock className="w-4 h-4" /> {KYC_QUEUE.filter(k => k.status === 'pending').length} awaiting review
+                        <Clock className="w-4 h-4" /> {kycQueue.filter(k => k.status === 'pending').length} awaiting review
                     </div>
                 </div>
             </motion.div>
@@ -91,7 +102,7 @@ export const AdminKYC = () => {
                             color: activeTab === tab ? 'white' : 'var(--color-text-secondary)',
                             border: activeTab === tab ? 'none' : '1px solid var(--color-border)',
                         }}>
-                        {tab === 'All' ? `All (${KYC_QUEUE.length})` : `${statusConfig[tab]?.label} (${KYC_QUEUE.filter(k => k.status === tab).length})`}
+                        {tab === 'All' ? `All (${kycQueue.length})` : `${statusConfig[tab]?.label} (${kycQueue.filter(k => k.status === tab).length})`}
                     </button>
                 ))}
             </div>
@@ -130,12 +141,20 @@ export const AdminKYC = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 ml-18 sm:ml-0">
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                                        style={{ backgroundColor: sc.bg, color: sc.color }}>
-                                        <StatusIcon className="w-3 h-3" /> {sc.label}
-                                    </span>
-                                    <button className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition-colors" onClick={(e) => e.stopPropagation()}>Approve</button>
-                                    <button className="px-4 py-2 rounded-xl text-xs font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors" onClick={(e) => e.stopPropagation()}>Reject</button>
+                                    {actionFeedback?.id === item.id ? (
+                                        <span className="text-sm font-bold" style={{ color: actionFeedback.action === 'approved' ? '#2E7D32' : '#D32F2F' }}>
+                                            {actionFeedback.action === 'approved' ? '✅ Approved' : '❌ Rejected'}
+                                        </span>
+                                    ) : (
+                                        <>
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                                                style={{ backgroundColor: sc.bg, color: sc.color }}>
+                                                <StatusIcon className="w-3 h-3" /> {sc.label}
+                                            </span>
+                                            <button className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition-colors" onClick={(e) => { e.stopPropagation(); handleAction(item.id, 'approved'); }}>Approve</button>
+                                            <button className="px-4 py-2 rounded-xl text-xs font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors" onClick={(e) => { e.stopPropagation(); handleAction(item.id, 'rejected'); }}>Reject</button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>
@@ -188,8 +207,10 @@ export const AdminKYC = () => {
                         </div>
 
                         <div className="flex gap-2 mt-5">
-                            <button className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-emerald-500 text-white">Approve</button>
-                            <button className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-red-500/10 text-red-500">Reject</button>
+                            <button onClick={() => handleAction(selectedKYC.id, 'approved')}
+                                className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-emerald-500 text-white">✅ Approve</button>
+                            <button onClick={() => handleAction(selectedKYC.id, 'rejected')}
+                                className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-red-500/10 text-red-500">❌ Reject</button>
                         </div>
                     </div>
                 )}

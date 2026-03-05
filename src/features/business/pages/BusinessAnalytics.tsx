@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BarChart3, TrendingUp, TrendingDown, ArrowUpRight, DollarSign, Package, Users, Calendar, Star } from 'lucide-react';
+import { BarChart3, TrendingUp, TrendingDown, ArrowUpRight, DollarSign, Package, Users, Calendar, Star, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { DetailModal, DetailRow } from '../../../components/ui/DetailModal';
 
@@ -43,6 +43,10 @@ const maxSpend = Math.max(...MONTHLY_SPENDING.map((m) => m.amount));
 export const BusinessAnalytics = () => {
     const [selectedKPI, setSelectedKPI] = useState<typeof KPI_CARDS[0] | null>(null);
     const [selectedSupplier, setSelectedSupplier] = useState<SupplierPerf | null>(null);
+    const [dateRange, setDateRange] = useState('FY 2025-26');
+    const [exported, setExported] = useState(false);
+
+    const handleExport = () => { setExported(true); setTimeout(() => setExported(false), 2000); };
 
     return (
         <div className="max-w-7xl mx-auto pb-8 min-h-screen">
@@ -58,12 +62,28 @@ export const BusinessAnalytics = () => {
                         <p className="text-white/60 mt-1 text-sm">Data-driven procurement insights for smarter decisions.</p>
                     </div>
                     <div className="px-4 py-2 rounded-2xl text-xs font-bold bg-white/10 text-white/90 border border-white/20 flex items-center gap-2">
-                        <Calendar className="w-4 h-4" /> FY 2025-26
+                        <Calendar className="w-4 h-4" /> {dateRange}
                     </div>
                 </div>
             </motion.div>
 
-            {/* KPI Cards */}
+            {/* Date Range Filter + Export */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                <div className="flex gap-2 overflow-x-auto hide-scrollbar">
+                    {['This Month', 'Last Quarter', 'Last 6 Months', 'FY 2025-26'].map((range) => (
+                        <button key={range} onClick={() => setDateRange(range)}
+                            className="px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all"
+                            style={{ backgroundColor: dateRange === range ? 'var(--color-accent)' : 'var(--color-bg-card)', color: dateRange === range ? 'white' : 'var(--color-text-secondary)', border: dateRange === range ? 'none' : '1px solid var(--color-border)' }}>
+                            {range}
+                        </button>
+                    ))}
+                </div>
+                <button onClick={handleExport}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all"
+                    style={{ backgroundColor: exported ? 'rgba(46,125,50,0.1)' : 'var(--color-bg-card)', color: exported ? '#2E7D32' : 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }}>
+                    <Download className="w-4 h-4" /> {exported ? '✅ Exported!' : 'Export Report'}
+                </button>
+            </div>            {/* KPI Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                 {KPI_CARDS.map((kpi, i) => (
                     <motion.div key={kpi.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}

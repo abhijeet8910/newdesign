@@ -1,42 +1,46 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../../store/authStore';
-import type { UserRole } from '../../../types';
+import { login as authLogin } from '../../../services/authService';
 import { motion } from 'framer-motion';
 
 export const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const login = useAuthStore((state: any) => state.login);
+    const storeLogin = useAuthStore((state) => state.login);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // If user was trying to access a protected page, redirect there after login
+    const from = (location.state as any)?.from?.pathname;
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+        setError('');
 
         try {
-            await new Promise((resolve) => setTimeout(resolve, 800));
+            const { user, accessToken } = await authLogin({ email, password });
 
-            let mockRole: UserRole = 'Customer';
-            if (email.includes('admin')) mockRole = 'Admin';
-            else if (email.includes('bulk')) mockRole = 'Bulk_Farmer';
-            else if (email.includes('farmer')) mockRole = 'Farmer';
-            else if (email.includes('business')) mockRole = 'Business';
+            storeLogin(user, accessToken);
 
-            login(
-                { id: '1', email, name: 'Demo User', role: mockRole },
-                'mock-jwt-token'
-            );
-
-            if (mockRole === 'Admin') navigate('/admin/dashboard');
-            else if (mockRole === 'Farmer' || mockRole === 'Bulk_Farmer') navigate('/farmer/dashboard');
-            else if (mockRole === 'Business') navigate('/business/dashboard');
-            else navigate('/customer/home');
-
-        } catch (error) {
-            console.error('Login failed', error);
+            // Navigate based on role or return to intended page
+            if (from) {
+                navigate(from, { replace: true });
+            } else if (user.role === 'Admin' || user.role === 'Super_Admin') {
+                navigate('/admin/dashboard');
+            } else if (user.role === 'Farmer' || user.role === 'Bulk_Farmer') {
+                navigate('/farmer/dashboard');
+            } else if (user.role === 'Business') {
+                navigate('/business/dashboard');
+            } else {
+                navigate('/customer/home');
+            }
+        } catch (err: any) {
+            setError(err.message || 'Login failed. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -49,6 +53,17 @@ export const Login = () => {
             className="space-y-6"
             onSubmit={handleLogin}
         >
+            {error && (
+                <div className="p-3 rounded-xl text-sm font-bold text-red-500" style={{ backgroundColor: 'rgba(211, 47, 47, 0.1)' }}>
+                    {error}
+                </div>
+            )}
+
+            {/* Hint */}
+            <div className="p-3 rounded-xl text-xs" style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-text-muted)' }}>
+                <strong>Demo:</strong> Use email containing <code className="font-bold">farmer</code>, <code className="font-bold">admin</code>, <code className="font-bold">business</code>, or any email for Customer. Any password works.
+            </div>
+
             <div>
                 <label htmlFor="email" className="block text-sm font-bold leading-6" style={{ color: 'var(--color-text-primary)' }}>
                     Email address

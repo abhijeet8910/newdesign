@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Truck, Search, Filter, Star, Clock, MapPin, Users, PackageOpen, Eye } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Truck, Search, Filter, Star, Clock, MapPin, Users, PackageOpen, Eye, X, Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DetailModal, DetailRow } from '../../../components/ui/DetailModal';
 
 const PIPELINE = [
@@ -43,6 +43,9 @@ export const BusinessProcurement = () => {
     const [view, setView] = useState<'pipeline' | 'suppliers'>('pipeline');
     const [selectedItem, setSelectedItem] = useState<{ data: PipelineItem; stage: string } | null>(null);
     const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+    const [showNewRequest, setShowNewRequest] = useState(false);
+    const [requestForm, setRequestForm] = useState({ item: '', quantity: '', category: 'Grains', supplier: '', deliveryDate: '', notes: '' });
+    const [requestSuccess, setRequestSuccess] = useState(false);
 
     return (
         <div className="max-w-7xl mx-auto pb-8 min-h-screen">
@@ -58,8 +61,9 @@ export const BusinessProcurement = () => {
                         <p className="text-white/60 mt-1 text-sm">Track orders from request to delivery.</p>
                     </div>
                     <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                        onClick={() => setShowNewRequest(true)}
                         className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold shadow-md bg-white/15 text-white border border-white/20 backdrop-blur-sm">
-                        <PackageOpen className="w-5 h-5" /> New Order
+                        <Plus className="w-5 h-5" /> New Request
                     </motion.button>
                 </div>
             </motion.div>
@@ -250,6 +254,85 @@ export const BusinessProcurement = () => {
                     </div>
                 )}
             </DetailModal>
+
+            {/* ═══ New Procurement Request Modal ═══ */}
+            <AnimatePresence>
+                {showNewRequest && (
+                    <>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-50" style={{ backgroundColor: 'rgba(15,26,19,0.6)', backdropFilter: 'blur(8px)' }}
+                            onClick={() => { setShowNewRequest(false); setRequestSuccess(false); }} />
+                        <motion.div initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 40 }}
+                            className="fixed inset-x-3 sm:inset-x-auto bottom-3 sm:bottom-auto top-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 z-50 w-auto sm:w-full sm:max-w-lg max-h-[88vh] overflow-y-auto rounded-[28px] shadow-2xl"
+                            style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
+                            <div className="sticky top-0 z-10 flex items-center justify-between p-5 rounded-t-[28px]"
+                                style={{ backgroundColor: 'var(--color-bg-card)', borderBottom: '1px solid var(--color-border-subtle)' }}>
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#4B6D5315' }}>
+                                        <PackageOpen className="w-5 h-5" style={{ color: '#4B6D53' }} />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-base font-black" style={{ color: 'var(--color-text-primary)' }}>New Procurement Request</h2>
+                                        <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Create a purchase order</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => { setShowNewRequest(false); setRequestSuccess(false); }}
+                                    className="p-2 rounded-xl" style={{ backgroundColor: 'var(--color-badge-bg)', color: 'var(--color-text-secondary)' }}>
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+
+                            {requestSuccess ? (
+                                <div className="p-10 text-center">
+                                    <div className="text-6xl mb-4">✅</div>
+                                    <h3 className="text-lg font-black" style={{ color: 'var(--color-text-primary)' }}>Request Submitted!</h3>
+                                    <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>Your procurement request is now in the pipeline.</p>
+                                </div>
+                            ) : (
+                                <div className="p-5 space-y-4">
+                                    {[{ label: 'Item Name', placeholder: 'e.g. Organic Basmati Rice — 500kg', key: 'item' },
+                                    { label: 'Quantity', placeholder: 'e.g. 500 kg', key: 'quantity' },
+                                    { label: 'Preferred Supplier', placeholder: 'e.g. Punjab Harvest (optional)', key: 'supplier' },
+                                    { label: 'Delivery By', placeholder: 'e.g. 2026-03-15', key: 'deliveryDate', type: 'date' },
+                                    ].map((field) => (
+                                        <div key={field.key}>
+                                            <label className="text-xs font-bold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-secondary)' }}>{field.label}</label>
+                                            <input type={field.type || 'text'} placeholder={field.placeholder}
+                                                value={(requestForm as any)[field.key]} onChange={(e) => setRequestForm((f) => ({ ...f, [field.key]: e.target.value }))}
+                                                className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 transition-all"
+                                                style={{ backgroundColor: 'var(--color-bg-primary)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }} />
+                                        </div>
+                                    ))}
+                                    <div>
+                                        <label className="text-xs font-bold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-secondary)' }}>Category</label>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {['Grains', 'Fruits', 'Vegetables', 'Spices', 'Dairy', 'Other'].map((cat) => (
+                                                <button key={cat} type="button" onClick={() => setRequestForm((f) => ({ ...f, category: cat }))}
+                                                    className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
+                                                    style={{ backgroundColor: requestForm.category === cat ? 'var(--color-accent)' : 'var(--color-bg-primary)', color: requestForm.category === cat ? 'white' : 'var(--color-text-secondary)', border: requestForm.category === cat ? 'none' : '1px solid var(--color-border)' }}>
+                                                    {cat}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-secondary)' }}>Notes</label>
+                                        <textarea placeholder="Special requirements, quality preferences..." value={requestForm.notes}
+                                            onChange={(e) => setRequestForm((f) => ({ ...f, notes: e.target.value }))}
+                                            rows={3} className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 resize-none transition-all"
+                                            style={{ backgroundColor: 'var(--color-bg-primary)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }} />
+                                    </div>
+                                    <button onClick={() => { setRequestSuccess(true); setTimeout(() => { setShowNewRequest(false); setRequestSuccess(false); setRequestForm({ item: '', quantity: '', category: 'Grains', supplier: '', deliveryDate: '', notes: '' }); }, 1500); }}
+                                        className="w-full py-3 rounded-xl text-sm font-black text-white"
+                                        style={{ backgroundColor: 'var(--color-accent)' }}>
+                                        ✨ Submit Request
+                                    </button>
+                                </div>
+                            )}
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

@@ -164,6 +164,77 @@ export const BusinessDashboard = () => {
                 </motion.div>
             </div>
 
+            {/* Low Stock Alerts + Upcoming Deliveries */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                {/* Low Stock Alerts */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
+                    className="rounded-[28px] p-6"
+                    style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
+                    <div className="flex items-center gap-2 mb-4">
+                        <span className="text-lg">⚠️</span>
+                        <h3 className="text-base font-black" style={{ color: 'var(--color-text-primary)' }}>Low Stock Alerts</h3>
+                    </div>
+                    <div className="space-y-2.5">
+                        {[
+                            { item: 'Basmati Rice', stock: '12 kg', threshold: '50 kg', urgency: 'critical', emoji: '🌾' },
+                            { item: 'Red Onions', stock: '25 kg', threshold: '100 kg', urgency: 'critical', emoji: '🧅' },
+                            { item: 'Turmeric Powder', stock: '8 kg', threshold: '20 kg', urgency: 'warning', emoji: '🌿' },
+                            { item: 'Fresh Mangoes', stock: '40 kg', threshold: '80 kg', urgency: 'warning', emoji: '🥭' },
+                        ].map((alert) => (
+                            <div key={alert.item} className="flex items-center justify-between p-3 rounded-xl"
+                                style={{ backgroundColor: alert.urgency === 'critical' ? 'rgba(211,47,47,0.06)' : 'rgba(245,124,0,0.06)', border: `1px solid ${alert.urgency === 'critical' ? 'rgba(211,47,47,0.15)' : 'rgba(245,124,0,0.15)'}` }}>
+                                <div className="flex items-center gap-2.5">
+                                    <span className="text-lg">{alert.emoji}</span>
+                                    <div>
+                                        <p className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{alert.item}</p>
+                                        <p className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>{alert.stock} left (min: {alert.threshold})</p>
+                                    </div>
+                                </div>
+                                <button className="px-3 py-1.5 rounded-xl text-[11px] font-bold text-white"
+                                    style={{ backgroundColor: alert.urgency === 'critical' ? '#D32F2F' : '#F57C00' }}>
+                                    Reorder
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+
+                {/* Upcoming Deliveries */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                    className="rounded-[28px] p-6"
+                    style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
+                    <div className="flex items-center gap-2 mb-4">
+                        <Truck className="w-5 h-5" style={{ color: 'var(--color-accent)' }} />
+                        <h3 className="text-base font-black" style={{ color: 'var(--color-text-primary)' }}>Upcoming Deliveries</h3>
+                    </div>
+                    <div className="space-y-3">
+                        {[
+                            { id: 'PO-2041', item: 'Organic Rice — 500kg', supplier: 'Ravi Farms', eta: 'Today, 4 PM', status: 'Out for Delivery', color: '#2E7D32' },
+                            { id: 'PO-2040', item: 'Fresh Mangoes — 200kg', supplier: 'Konkan Growers', eta: 'Tomorrow, 11 AM', status: 'In Transit', color: '#0288D1' },
+                            { id: 'PO-2038', item: 'Wheat Flour — 300kg', supplier: 'Punjab Harvest', eta: 'Mar 8', status: 'Processing', color: '#7B1FA2' },
+                            { id: 'PO-2037', item: 'Green Cardamom — 20kg', supplier: 'Coorg Plantations', eta: 'Mar 9', status: 'Confirmed', color: '#F57C00' },
+                        ].map((d, i) => (
+                            <div key={d.id} className="flex items-center gap-3 relative">
+                                {/* Timeline dot + line */}
+                                <div className="flex flex-col items-center shrink-0">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }} />
+                                    {i < 3 && <div className="w-0.5 h-8" style={{ backgroundColor: 'var(--color-border)' }} />}
+                                </div>
+                                <div className="flex-1 flex items-center justify-between py-1">
+                                    <div>
+                                        <p className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{d.item}</p>
+                                        <p className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>{d.supplier} • {d.id}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-xs font-bold" style={{ color: d.color }}>{d.eta}</p>
+                                        <p className="text-[10px] font-bold" style={{ color: 'var(--color-text-muted)' }}>{d.status}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+            </div>
             {/* Quick Actions */}
             <div>
                 <h2 className="text-xl font-black mb-5" style={{ color: 'var(--color-text-primary)' }}>Quick Actions</h2>

@@ -176,6 +176,70 @@ export const AdminDashboard = () => {
                 </motion.div>
             </div>
 
+            {/* Revenue & User Growth Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                {/* Revenue Trend */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+                    className="rounded-[28px] p-6"
+                    style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
+                    <div className="flex items-center justify-between mb-5">
+                        <h3 className="text-base font-black" style={{ color: 'var(--color-text-primary)' }}>Platform Revenue (GMV)</h3>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600">+34% YoY</span>
+                    </div>
+                    <div className="flex items-end justify-between gap-2 h-36">
+                        {[
+                            { month: 'Sep', value: 4.2 }, { month: 'Oct', value: 5.8 }, { month: 'Nov', value: 5.1 },
+                            { month: 'Dec', value: 7.2 }, { month: 'Jan', value: 8.5 }, { month: 'Feb', value: 9.1 }, { month: 'Mar', value: 10.4 },
+                        ].map((m, i, arr) => {
+                            const max = Math.max(...arr.map((a) => a.value));
+                            return (
+                                <div key={m.month} className="flex-1 flex flex-col items-center gap-1.5">
+                                    <span className="text-[9px] font-bold" style={{ color: 'var(--color-text-muted)' }}>₹{m.value}L</span>
+                                    <motion.div initial={{ height: 0 }} animate={{ height: `${(m.value / max) * 100}%` }}
+                                        transition={{ delay: 0.6 + i * 0.08, duration: 0.5 }}
+                                        className="w-full rounded-xl" style={{ backgroundColor: 'var(--color-accent)', opacity: 0.3 + (i / arr.length) * 0.7 }} />
+                                    <span className="text-[9px] font-bold" style={{ color: 'var(--color-text-secondary)' }}>{m.month}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </motion.div>
+
+                {/* User Growth */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
+                    className="rounded-[28px] p-6"
+                    style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
+                    <div className="flex items-center justify-between mb-5">
+                        <h3 className="text-base font-black" style={{ color: 'var(--color-text-primary)' }}>User Growth by Role</h3>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600">+289 this month</span>
+                    </div>
+                    <div className="space-y-4">
+                        {[
+                            { role: 'Farmers', count: 520, total: 1200, color: '#4B6D53', emoji: '👨‍🌾', growth: '+45' },
+                            { role: 'Businesses', count: 180, total: 1200, color: '#0288D1', emoji: '🏢', growth: '+12' },
+                            { role: 'Customers', count: 892, total: 1200, color: '#7B1FA2', emoji: '🛒', growth: '+232' },
+                        ].map((r) => (
+                            <div key={r.role}>
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-lg">{r.emoji}</span>
+                                        <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{r.role}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-black" style={{ color: r.color }}>{r.count}</span>
+                                        <span className="text-[10px] font-bold text-emerald-600">{r.growth}</span>
+                                    </div>
+                                </div>
+                                <div className="w-full h-3 rounded-full" style={{ backgroundColor: 'var(--color-badge-bg)' }}>
+                                    <motion.div initial={{ width: 0 }} animate={{ width: `${(r.count / r.total) * 100}%` }}
+                                        transition={{ delay: 0.7, duration: 0.6 }}
+                                        className="h-full rounded-full" style={{ backgroundColor: r.color }} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+            </div>
             {/* Stat Detail Modal */}
             <DetailModal isOpen={!!selectedStat} onClose={() => setSelectedStat(null)}
                 title={selectedStat?.title || ''} subtitle={selectedStat?.trend}

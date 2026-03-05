@@ -41,6 +41,8 @@ export const AdminSettings = () => {
     });
 
     const toggle = (key: string) => setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
+    const [saved, setSaved] = useState(false);
+    const handleSave = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
 
     const sections = [
         {
@@ -134,10 +136,10 @@ export const AdminSettings = () => {
                             className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-bold bg-white/10 text-white/80 border border-white/20">
                             <RotateCcw className="w-4 h-4" /> Reset
                         </motion.button>
-                        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold shadow-md text-white"
-                            style={{ backgroundColor: 'var(--color-accent)' }}>
-                            <Save className="w-4 h-4" /> Save Changes
+                        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={handleSave}
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold shadow-md text-white transition-all"
+                            style={{ backgroundColor: saved ? '#2E7D32' : 'var(--color-accent)' }}>
+                            <Save className="w-4 h-4" /> {saved ? '✅ Saved!' : 'Save Changes'}
                         </motion.button>
                     </div>
                 </div>

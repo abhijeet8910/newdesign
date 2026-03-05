@@ -3,7 +3,7 @@ import { Users, Search, Filter, Eye, MapPin, UserPlus, Ban, CheckCircle, Mail } 
 import { motion } from 'framer-motion';
 import { DetailModal, DetailRow } from '../../../components/ui/DetailModal';
 
-const ALL_USERS = [
+const INITIAL_USERS = [
     { name: 'Rajesh Kumar', email: 'rajesh@email.com', role: 'Farmer', status: 'Active', joined: 'Jan 15, 2026', orders: 23, location: 'Hyderabad', avatar: 'RK', phone: '+91 98765 43210', revenue: '₹ 1,84,000', lastActive: '2 hours ago' },
     { name: 'Priya Foods Pvt Ltd', email: 'priya@foods.com', role: 'Business', status: 'Active', joined: 'Feb 01, 2026', orders: 56, location: 'Mumbai', avatar: 'PF', phone: '+91 87654 32109', revenue: '₹ 8,45,000', lastActive: '30 min ago' },
     { name: 'Mohit Patel', email: 'mohit@email.com', role: 'Customer', status: 'Active', joined: 'Feb 20, 2026', orders: 8, location: 'Pune', avatar: 'MP', phone: '+91 76543 21098', revenue: '₹ 12,400', lastActive: '1 hour ago' },
@@ -29,9 +29,15 @@ const statusStyles: Record<string, { bg: string; text: string }> = {
 export const AdminUsers = () => {
     const [activeTab, setActiveTab] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedUser, setSelectedUser] = useState<typeof ALL_USERS[0] | null>(null);
+    const [users, setUsers] = useState(INITIAL_USERS);
+    const [selectedUser, setSelectedUser] = useState<typeof INITIAL_USERS[0] | null>(null);
 
-    const filtered = ALL_USERS.filter((u) => {
+    const toggleUserStatus = (email: string) => {
+        setUsers((prev) => prev.map((u) => u.email === email ? { ...u, status: u.status === 'Active' ? 'Suspended' : 'Active' } : u));
+        setSelectedUser((prev) => prev ? { ...prev, status: prev.status === 'Active' ? 'Suspended' : 'Active' } : null);
+    };
+
+    const filtered = users.filter((u) => {
         const matchesRole = activeTab === 'All' || u.role === activeTab;
         const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || u.email.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesRole && matchesSearch;
@@ -99,7 +105,7 @@ export const AdminUsers = () => {
                             border: activeTab === tab ? 'none' : '1px solid var(--color-border)',
                         }}>
                         {tab === 'All' && <Users className="w-4 h-4" />}
-                        {tab} {tab === 'All' ? `(${ALL_USERS.length})` : `(${ALL_USERS.filter(u => u.role === tab).length})`}
+                        {tab} {tab === 'All' ? `(${users.length})` : `(${users.filter(u => u.role === tab).length})`}
                     </button>
                 ))}
             </div>
@@ -179,12 +185,14 @@ export const AdminUsers = () => {
 
                         <div className="flex gap-2 mt-5">
                             {selectedUser.status === 'Active' && (
-                                <button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-red-500/10 text-red-500">
+                                <button onClick={() => toggleUserStatus(selectedUser.email)}
+                                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-red-500/10 text-red-500">
                                     <Ban className="w-4 h-4" /> Suspend
                                 </button>
                             )}
                             {selectedUser.status === 'Suspended' && (
-                                <button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-600">
+                                <button onClick={() => toggleUserStatus(selectedUser.email)}
+                                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-600">
                                     <CheckCircle className="w-4 h-4" /> Reactivate
                                 </button>
                             )}
